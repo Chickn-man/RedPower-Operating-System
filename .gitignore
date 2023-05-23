@@ -58,3 +58,5 @@ dkms.conf
 
 # Other Stuff
 emu65el02/
+*/bin/
+*/lib/
