@@ -18,6 +18,8 @@ diskcommand=windowaddr+$82
 *= $0 ; zero page
 ver: !word $0 ; 16 bit kernel version id
 arg0: !word $0 ; argument 0 for passing to functions
+arg1: !word $0 ; argument 1 for passing to functions
+arg2: !word $0 ; argument 2 for passing to functions      
 loadaddr: !word $0
 sector: !word $0
 
@@ -51,21 +53,23 @@ jsr readsector
 sep #$30
 !as
 
-jsr hellorld
+lda mbr_type_1
+cmp #$01
+beq hasfs
+jmp nofs
 
-init:
-    lda mbr_type_1
-    cmp #$0e
-    beq hasfs
-    jmp nofs
 hasfs:
-    rep #$30
-    !al
-    lda mbr_lbas_1
-    sta sector
-    jsr readsector
+rep #$30
+!al
+lda mbr_lbas_1
+sta sector
+lda #sector_buffer
+sta sector_store_addr
+jsr readsector
 
-    
+jsr load_kernel
+jmp error
+
 hlt:
     jmp hlt
 
@@ -73,8 +77,7 @@ jmp $400
 
 hellot: !text "Hellorld!", 0
 errort: !text "error", 0
-nofst: !text "no fat16 filesystem detected on disk, maybe wrong type in mbr (should be 0x0e)", 0
-nokernelt: !text "/boot/kernel is missing or corrupt", 0
+nofst: !text "no fat12 filesystem detected on disk, maybe wrong type in mbr (should be 0x01)", 0
 
 error:
     rep #$30 ; 16 bit mode
@@ -111,7 +114,7 @@ clearscreen:
     mmu #$00
 
     lda #' '
-    LDX #49
+    ldx #49
 clsss
     stx screenrow
     ldy #79
@@ -214,37 +217,164 @@ rsret:
 
 *= $6be ; mbr entry 1
 bootable_1: !byte $80 ; bootable
-!byte $1 ; head
+!byte $0 ; head
 ;     Sector| Cylinder
 !word %0000100000000000
-mbr_type_1: !byte $0e ; fat16 lba mapped
-!byte $d ; head
+mbr_type_1: !byte $01 ; fat12
+!byte $8 ; head
 ;     Sector| Cylinder
-!word %0011010000110000
-mbr_lbas_1: !byte $40, $00, $00, $00 ; starts at $40
-mbr_lbae_1: !byte $c0, $3f, $00, $00 ; size of $3fc0
+!word %0001110000000000
+mbr_lbas_1: !32 $00000002 ; starts at $2
+mbr_lbae_1: !32 $000001fe ; size of 510
 
 *= $6fe
 !word $aa55
 
 *= $700 ; extended boot code
-hellorld:
-    rep #$30 ; 16 bit mode
+load_kernel:
+    rep #$30
     !al
     lda #hellot
     sta arg0
-    !as
-    sep #$30 ; 8 bit mode
+    sep #$30
+    !as 
     jsr print
+
+    ; compare fs type
+    rep #$30
+    !al
+    lda #FS_TYPE
+    sta arg0
+    lda #fatt
+    sta arg1
+    lda #8
+    sta arg2
+    sep #$30
+    !as
+    !rs
+    jsr memcmp
+    cpx #0
+    beq fat12
+
+    rep #$30
+    !al
+    lda #notf12t
+    sta arg0
+    sep #$30
+    !as 
+    jsr print
+
+    jmp hlt
+
+fat12:
+    ; copy serial number
+    rep #$30
+    !al
+    lda #FS_SERIAL
+    sta arg0
+    lda #fat_serial
+    sta arg1
+    lda #4
+    sta arg2
+    sep #$30
+    !as
+    jsr memcopy
+
+    ; copy fs lable
+    rep #$30
+    !al
+    lda #FS_LABLE
+    sta arg0
+    lda #fat_lable
+    sta arg1
+    lda #11
+    sta arg2
+    sep #$30
+    !as
+    jsr memcopy
+
+    lda FS_SPC
+    sta fat_spc
+    lda FS_COPIES
+    sta fat_copies
+    rep #$30
+    !al
+    lda FS_RSRVD
+    sta fat_rsrvd
+    lda FS_ROOT
+    sta fat_root
+    lda FS_SPF
+    sta fat_spf
+
+    jmp hlt
+
+memcopy:
+    php 
+    sep #$30
+    !as
+    !rs
+    ldy #0
+mcploop:
+    lda (arg0), Y
+    sta (arg1), Y
+    iny 
+    cpy arg2
+    bne mcploop
+    plp 
     rts
 
+memcmp:
+    php 
+    sep #$30
+    !as
+    !rs
+    ldy #0
+mcmploop:
+    lda (arg0), Y
+    cmp (arg1), Y
+    bne mcmpne
+    iny 
+    cpy arg2
+    bne mcmploop
+    ldx #0
+    plp 
+    rts  
+mcmpne:
+    ldx #1
+    plp 
+    rts 
+
+fatt: !text "FAT12   "
+notf12t: !text "File system is not fat12", 0
+notrposfst: !text "File system is not RPOS boot partition (wrong lable)", 0
+nobootfldrt: !text "/boot/ not found", 0
+nokernelt: !text "/boot/kernel is missing or corrupt", 0
+
 *= $900 ; boot services memory
+fat_serial:!32 $00000000
+fat_lable: !text "           "
+fat_spc:   !byte $00
+fat_rsrvd: !word $0000
+fat_copies:!byte $00
+fat_root:  !word $0000
+fat_spf:   !word $0000
 
 *= $1000 ; kernel
 
 *= $2000 ; ram
 
+*= $f900
+file_allocation_table:
+
 *= $fd00 ; sector buffer
 sector_buffer:
+FS_SPC=sector_buffer+$d
+FS_RSRVD=sector_buffer+$e
+FS_COPIES=sector_buffer+$10
+FS_ROOT=sector_buffer+$11
+FS_SPF=sector_buffer+$16
+FS_SERIAL=sector_buffer+$27 
+FS_LABLE=sector_buffer+$2b
+FS_TYPE=sector_buffer+$36
 
 *= $ff00 ; redbus window

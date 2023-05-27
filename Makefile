@@ -16,7 +16,7 @@ kernel:
 .PHONY: filesystem
 filesystem: bootloader kernel
 	-@ rm fs.img
-	@ mkfs.vfat -C -n "RPOS BOOT" -s 2 -F12 fs.img 255
+	@ mkfs.vfat -C -n "RPOS BOOT" -s 1 -F12 fs.img 255
 	@ mmd -i fs.img ::/boot
 	@ mcopy -i fs.img kernel/bin/kernel ::/boot/kernel
 
