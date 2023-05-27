@@ -1,13 +1,13 @@
 .PHONY: image
 image: filesystem 
-	@ dd if=/dev/zero of=floppy.img bs=512 count=16384
+	@ dd if=/dev/zero of=floppy.img bs=512 count=512
 	@ dd if=bootloader/bin/boot.bin of=floppy.img conv=notrunc
 	@ dd if=bootloader/bin/exboot.bin of=floppy.img bs=512 seek=1 conv=notrunc
-	@ dd if=fs.img of=floppy.img bs=512 seek=64 conv=notrunc
+	@ dd if=fs.img of=floppy.img bs=512 seek=2 conv=notrunc
 
 .PHONY: bootloader
 bootloader:
-	make -C bootloader
+	make -C bootloader 
 
 .PHONY: kernel
 kernel:
@@ -15,8 +15,8 @@ kernel:
 
 .PHONY: filesystem
 filesystem: bootloader kernel
-	@ dd if=/dev/zero of=fs.img bs=512 count=16320
-	@ mkfs.vfat -s 2 -F16 fs.img
+	-@ rm fs.img
+	@ mkfs.vfat -C -n "RPOS BOOT" -s 2 -F12 fs.img 255
 	@ mmd -i fs.img ::/boot
 	@ mcopy -i fs.img kernel/bin/kernel ::/boot/kernel
 

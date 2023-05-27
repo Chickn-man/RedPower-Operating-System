@@ -18,7 +18,6 @@ BUILDDIR := bin
 
 .PHONY: build
 build: setup
-	@ nasm $(SRCDIR)/intel.asm -o $(OBJDIR)/intel.o
 	@ $(AS) $(ASFLAGS) -o $(OBJDIR)/boot.o -f plain $(SRCDIR)/boot.s
 	-@ rm $(BUILDDIR)/boot.bin
 	@ dd if=$(OBJDIR)/boot.o of=$(BUILDDIR)/boot.bin bs=128 skip=10 count=4
