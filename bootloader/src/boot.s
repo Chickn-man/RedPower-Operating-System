@@ -267,6 +267,32 @@ load_kernel:
     jmp hlt
 
 fat12:
+     ; compare fs lable
+    rep #$30
+    !al
+    lda #FS_LABLE
+    sta arg0
+    lda #lablet
+    sta arg1
+    lda #11
+    sta arg2
+    sep #$30
+    !as
+    jsr memcmp
+    cpx #0
+    beq rposboot
+
+    rep #$30
+    !al
+    lda #notrposfst
+    sta arg0
+    sep #$30
+    !as 
+    jsr print
+
+    jmp hlt
+
+rposboot:
     ; copy serial number
     rep #$30
     !al
@@ -275,19 +301,6 @@ fat12:
     lda #fat_serial
     sta arg1
     lda #4
-    sta arg2
-    sep #$30
-    !as
-    jsr memcopy
-
-    ; copy fs lable
-    rep #$30
-    !al
-    lda #FS_LABLE
-    sta arg0
-    lda #fat_lable
-    sta arg1
-    lda #11
     sta arg2
     sep #$30
     !as
@@ -323,6 +336,22 @@ mcploop:
     plp 
     rts
 
+memcopyf:
+    php 
+    rep #$30
+    !al
+    !rl
+    ldy #0
+mcpfloop:
+    lda (arg0), Y
+    sta (arg1), Y
+    iny
+    iny
+    cpy arg2
+    bne mcpfloop
+    plp 
+    rts
+
 memcmp:
     php 
     sep #$30
@@ -345,6 +374,7 @@ mcmpne:
     rts 
 
 fatt: !text "FAT12   "
+lablet: !text "RPOS BOOT  "
 notf12t: !text "File system is not fat12", 0
 notrposfst: !text "File system is not RPOS boot partition (wrong lable)", 0
 nobootfldrt: !text "/boot/ not found", 0
@@ -352,7 +382,6 @@ nokernelt: !text "/boot/kernel is missing or corrupt", 0
 
 *= $900 ; boot services memory
 fat_serial:!32 $00000000
-fat_lable: !text "           "
 fat_spc:   !byte $00
 fat_rsrvd: !word $0000
 fat_copies:!byte $00
