@@ -26,8 +26,8 @@ sector: !word $0
 *= $500 ; bootloader 
 clc
 xce
-rep #$30 ; 16 bit registers
 
+rep #$30 ; 16 bit registers
 !al
 lda #$1 ; screen id
 mmu #0
@@ -128,6 +128,10 @@ clsret:
     rts
 
 print:
+    php
+    sep #$30
+    !as
+    !rs
     lda #1
     mmu #$00
 
@@ -142,6 +146,7 @@ printloop:
     inx
     jmp printloop
 printret:
+    plp
     rts
 
 readphysector:
@@ -236,76 +241,57 @@ load_kernel:
     !al
     lda #hellot
     sta arg0
-    sep #$30
-    !as 
     jsr print
 
     ; compare fs type
-    rep #$30
-    !al
     lda #FS_TYPE
     sta arg0
     lda #fatt
     sta arg1
     lda #8
     sta arg2
-    sep #$30
-    !as
-    !rs
     jsr memcmp
-    cpx #0
+    and #$fe
+    cmp #0
     beq fat12
 
-    rep #$30
-    !al
     lda #notf12t
     sta arg0
-    sep #$30
-    !as 
     jsr print
 
     jmp hlt
 
 fat12:
      ; compare fs lable
-    rep #$30
-    !al
     lda #FS_LABLE
     sta arg0
     lda #lablet
     sta arg1
     lda #11
     sta arg2
-    sep #$30
-    !as
     jsr memcmp
-    cpx #0
+    and #$fe
+    cmp #0
     beq rposboot
 
-    rep #$30
-    !al
     lda #notrposfst
     sta arg0
-    sep #$30
-    !as 
     jsr print
 
     jmp hlt
 
 rposboot:
     ; copy serial number
-    rep #$30
-    !al
     lda #FS_SERIAL
     sta arg0
     lda #fat_serial
     sta arg1
     lda #4
     sta arg2
-    sep #$30
-    !as
     jsr memcopy
 
+    sep #$30
+    !as
     lda FS_SPC
     sta fat_spc
     lda FS_COPIES
@@ -336,19 +322,19 @@ mcploop:
     plp 
     rts
 
-memcopyf:
+memcopy16:
     php 
     rep #$30
     !al
     !rl
     ldy #0
-mcpfloop:
+mcpsloop:
     lda (arg0), Y
     sta (arg1), Y
     iny
     iny
     cpy arg2
-    bne mcpfloop
+    bne mcpsloop
     plp 
     rts
 
@@ -365,11 +351,11 @@ mcmploop:
     iny 
     cpy arg2
     bne mcmploop
-    ldx #0
+    lda #0
     plp 
     rts  
 mcmpne:
-    ldx #1
+    lda #1
     plp 
     rts 
 
