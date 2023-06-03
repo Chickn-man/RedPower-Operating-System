@@ -1,0 +1,8 @@
+0x00 | unspecified error
+0x01 | no fat12 filesystem detected on disk, maybe wrong type in mbr (should be 0x01)
+0x02 | File system is not fat12
+0x03 | File system is not RPOS boot partition (wrong lable)
+0x04 | /boot/ not found
+0x05 | /boot/kernel is missing or corrupt
+0x06 | disk error
+0x07 | kernel exited
