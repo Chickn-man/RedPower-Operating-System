@@ -255,20 +255,13 @@ odd_entry:
     ldy #1
     lda (250), y
     and #$f0
-    rol
-    rol
-    rol
-    rol
+    xba
     rep #$30
     !al
-    rol
-    rol
-    rol
-    rol
-    rol
-    rol
-    rol
-    rol
+    ror
+    ror
+    ror
+    ror
     sep #$30
     !as
     bra exitrf
