@@ -1,7 +1,7 @@
 !cpu 65EL02
 
 *= $0 ; zero page
-ver: !word $0 ; 16 bit kernel version id
+ret0: !word $0
 arg0: !word $0 ; argument 0 for passing to functions
 arg1: !word $0 ; argument 1 for passing to functions
 arg2: !word $0 ; argument 2 for passing to functions      
@@ -231,6 +231,7 @@ readfat:
     lda arg0
     div 254
     mul 252
+    clc 
     adc #file_allocation_table
     sta 250
     lda arg0
@@ -258,14 +259,14 @@ odd_entry:
     xba
     rep #$30
     !al
-    ror
-    ror
-    ror
-    ror
-    sep #$30
-    !as
-    bra exitrf
-exitrf: 
+    clc
+    rol
+    rol
+    rol
+    rol
+    rol
+exitrf:
+    rep #$30
     plp
     plx
     ply
@@ -450,7 +451,9 @@ kernel_found:
     sta 246
     lda DE2_CLUSTER
     sta arg0
+    clc 
     adc fat_cluster
+    adc #1
     sta sector
     lda #sector_buffer
     sta sector_store_addr
@@ -461,10 +464,13 @@ kernel_found:
 g65djn7k:
     jsr readfat
     sta arg0
+    clc
     adc fat_cluster
     adc #1
     sta sector
+    sty 244
     jsr readsector
+    ldy 244
     ldx #0
 load_kernel_loop:
     lda sector_buffer, x
@@ -476,7 +482,7 @@ load_kernel_loop:
     cpy 246
     bcs kernel_loaded
     cpx #512
-    beq g65djn7k
+    bcs g65djn7k
     bra load_kernel_loop
 kernel_loaded:
     lda #kernel_magic
