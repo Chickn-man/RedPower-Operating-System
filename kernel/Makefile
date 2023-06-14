@@ -8,8 +8,8 @@ INCS = -I ./src -I ./cc65/include
 LIBS = -L ./cc65/rpos-kernel.lib
 
 LDS = ./cc65/rpc8.cfg
-CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none --standard cc65
-ASFLAGS = --cpu 65816 -t none
+CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none -Osir -g --standard cc65
+ASFLAGS = --cpu 65816 -g -t none
 LDFLAGS = -C $(LDS)
 
 SRCDIR := src

@@ -1,6 +1,5 @@
 #include <mmu.h>
-
-char *screenBuffer = (char *)0xff10;
+#include <window.h>
 
 void print(char *string);
 
