@@ -10,7 +10,6 @@
 
 .proc _setMappedRedbusDev: near
     php
-    sep #$30
 	.byte $EF
 	.byte $00
     plp

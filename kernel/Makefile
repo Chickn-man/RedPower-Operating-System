@@ -8,7 +8,7 @@ INCS = -I ./src -I ./cc65/include
 LIBS = -L ./cc65/rpos-kernel.lib
 
 LDS = ./cc65/rpc8.cfg
-CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none
+CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none --standard cc65
 ASFLAGS = --cpu 65816 -t none
 LDFLAGS = -C $(LDS)
 
@@ -30,7 +30,7 @@ build: setup link
 .PHONY: link
 link: $(OBJS) cc65
 	@ echo !==== LINKING $^
-	$(LD) $(LDFLAGS) -o $(BUILDDIR)/$(PROGNAME) -m $(BUILDDIR)/$(PROGNAME).map $(OBJS)./cc65/rpos-kernel.lib
+	$(LD) $(LDFLAGS) -o $(BUILDDIR)/$(PROGNAME) -m $(BUILDDIR)/$(PROGNAME).map $(OBJS) ./cc65/rpos-kernel.lib
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@ echo !==== COMPILING $^

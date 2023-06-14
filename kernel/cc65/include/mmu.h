@@ -11,7 +11,7 @@ void __fastcall__ setMemoryMappedWindow(unsigned short offset);
 unsigned short getMemoryMappedWindow(void);
 void __fastcall__ setBrkAddress(void (*fcnAddr)(void));
 void (*getBrkAddress(void))(void);
-void __fastcall__ setPorAddress(void (*fcnAddr)(.void));
+void __fastcall__ setPorAddress(void (*fcnAddr)(void));
 void (*getPorAddress(void))(void);
 void _logRegisterA(void);
 
