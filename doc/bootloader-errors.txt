@@ -6,3 +6,4 @@
 0x05 | /boot/kernel is missing or corrupt
 0x06 | disk error
 0x07 | kernel exited
+0x08 | insuffcient memory (first 64k of ram is not completly populated)

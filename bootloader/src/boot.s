@@ -28,6 +28,20 @@ stz cursory ; cursor y
 stz cursor ; reset cursor
 jsr clearscreen
 
+lda #$fe
+sta $e000
+lda #0
+lda $e000
+cmp #$fe
+beq rampass
+
+rep #$30
+!al
+lda #$3830
+sta error_code_ascii
+jmp error
+
+rampass:
 rep #$30
 !al
 lda #1
@@ -69,7 +83,6 @@ fatt: !text "FAT12   "
 lablet: !text "RPOS BOOT  "
 boott: !text "BOOT       "
 kernelt !text "KERNEL     "
-magic: !text $fe, "RPOS"
 errort: !text "error 0x"
 error_code_ascii: !text "00", 0
 
@@ -529,22 +542,7 @@ mcmpne:
     plp 
     rts
 
-memcopy16:
-    php 
-    rep #$30
-    !al
-    !rl
-    ldy #0
-mcpsloop:
-    lda (arg0), Y
-    sta (arg1), Y
-    iny 
-    iny 
-    cpy arg2
-    bne mcpsloop
-    plp 
-    rts
-
+magic: !text $fe, "RPOS"
 
 *= $900 ; boot services memory
 fat_serial:!32 $00000000
@@ -651,7 +649,7 @@ DE2_WDATE:     !word $0000
 DE2_CLUSTER:   !word $0000
 DE2_SIZE:      !32   $00000000
 
-*= $ff00 ; redbus window\
+*= $ff00 ; redbus window
 windowaddr:
 screenrow=windowaddr
 cursorx=windowaddr+$1
