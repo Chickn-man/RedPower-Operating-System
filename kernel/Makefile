@@ -4,8 +4,8 @@ CC = cl65
 AS = ca65
 LD = ld65
 
-INCS = -I ./src -I ./cc65/include
-LIBS = -L ./cc65/rpos-kernel.lib
+INCS = -I ./src/ -I ./src/asm -I ./cc65/include
+LIBS = 
 
 LDS = ./cc65/rpc8.cfg
 CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none -Osir -g --standard cc65

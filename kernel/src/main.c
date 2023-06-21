@@ -1,21 +1,19 @@
 #include <mmu.h>
+#include <globals.h>
 #include <window.h>
+#include <conio.h>
 
 void print(char *string);
 
-int main() {
-    print("Hellorld!");
+int main(void) {
+    char c;
 
-    return 0;
-}
+    cputs("Hellorld!\n");
 
-int print_i = 0;
-
-void print(char *string) {
-    setMappedRedbusDev(1);
-
-    for (print_i = 0; string[print_i] != 0; print_i++) {
-        screenBuffer[print_i] = string[print_i];
+    while (1) {
+        c = cgetc();
+        if (c == 0x8) cbkspc(); else cputc(c);
     }
 
+    return 0;
 }

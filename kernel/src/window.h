@@ -38,6 +38,7 @@
 #define keyPosition *((unsigned char *)KEY_POSITION)
 #define keyStart *((unsigned char *)KEY_START)
 #define blitMode *((unsigned char *)BLIT_MODE)
+#define blitChar *((unsigned char *)BLIT_X)
 #define blitX *((unsigned char *)BLIT_X)
 #define blitY *((unsigned char *)BLIT_Y)
 #define blitXOffset *((unsigned char *)BLIT_X_OFFSET)
@@ -52,5 +53,24 @@
 #define diskBuffer ((unsigned char *)DISK_BUFFER)
 #define diskSector *((unsigned short *)DISK_SECTOR)
 #define diskCommand *((unsigned char *)DISK_COMMAND)
+
+/* command defines */
+
+#define CURSOR_HIDDEN 0
+#define CURSOR_SOLID 1
+#define CURSOR_BLINK 2
+
+#define BLIT_IDLE 0
+#define BLIT_FILL 1
+#define BLIT_INVERT 2
+#define BLIT_SHIFT 3
+
+#define DISK_IDLE 0
+#define DISK_READ_NAME 1
+#define DISK_WRITE_NAME 2
+#define DISK_READ_SERIAL 3
+#define DISK_READ 4
+#define DISK_WRITE 5
+#define DISK_FAILURE 0xff
 
 #endif
