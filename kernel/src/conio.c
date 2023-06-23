@@ -128,6 +128,8 @@ char cgetc(void) {
 void cbkspc(void) {
     setMappedRedbusDev(screenID);
 
+    if (cursorX == 0 && cursorY == 0) return;
+
     cursorX = cursorX - 1;
     if (cursorX == 255) gotoXY(79, cursorY - 1);
 

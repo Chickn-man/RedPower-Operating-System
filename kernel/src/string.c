@@ -40,5 +40,7 @@ unsigned char strcmp(char *s1, char *s2) {
 void strdelc(char *str) {
     unsigned short len = strlen(str);
 
+    if (!len) return;
+
     str[len - 1] = 0;
 }

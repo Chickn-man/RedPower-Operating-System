@@ -15,7 +15,7 @@ int main(void) {
         c = cgetc();
         if (c == 0x8) strdelc(input), cbkspc(), c = 0; else cputc(c);
 
-        if (c == '\r') {
+        if (c == '\r' || c == '\n') {
             if (strlen(input) != 0) {
                 if (strcmp(input, "cls") == 0) {
                     cls();
