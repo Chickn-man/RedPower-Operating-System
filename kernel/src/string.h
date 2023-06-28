@@ -12,6 +12,6 @@ unsigned int hextoi(char *str);
 char *itohex(unsigned int num);
 
 int atoi(char *str);
-char *itoa(int num);
+char *itoa(int num, char *buffer, int radix);
 
 #endif 

@@ -4,11 +4,13 @@
 #include <conio.h>
 #include "string.h"
 
+char input[128];
+char command[64];
+char buffer[64];
+
 int main(void) {
     unsigned char i;
     char c;
-    char input[128];
-    char command[64];
 
     cputs("Hellorld!\n");
 
@@ -28,6 +30,18 @@ int main(void) {
                 } else if (strcmp(command, "ascii") == 0) {
                     for (i = 0; i < 255; i++) cputc2(i);
                     cputc('\n');
+
+                } else if (strcmp(command, "version") == 0) {
+VERSION:            cputs("RedPower Operating System ");
+                    cputs(itoa(VERSION_MAJ, buffer, 10));
+                    cputc('.');
+                    cputs(itoa(VERSION_MIN, buffer, 10));
+                    cputc('.');
+                    cputs(itoa(VERSION_FIX, buffer, 10));
+                    cputc('\n');
+
+                } else if (strcmp(command, "ver") == 0) {
+                    goto VERSION;
 
                 } else if (strcmp(command, "peek") == 0) {
                     // grab address from input, read value at addr and print value in hex
