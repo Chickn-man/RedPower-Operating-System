@@ -1,14 +1,18 @@
 PROGNAME = kernel
 
+VERSION_MAJ = 0
+VERSION_MIN = 4
+VERSION_FIX = 1
+
 CC = cl65
 AS = ca65
 LD = ld65
 
-INCS = -I ./src/ -I ./src/asm -I ./cc65/include
+INCS = -I ./src/ -I ./src/asm -I ./cc65/include -I /
 LIBS = 
 
 LDS = ./cc65/rpc8.cfg
-CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none -Osir -g --standard cc65
+CFLAGS = $(LIBS) $(INCS) --cpu 65816 -t none -Osr -g --standard cc65 -DVERSION_MAJ=$(VERSION_MAJ) -DVERSION_MIN=$(VERSION_MIN) -DVERSION_FIX=$(VERSION_FIX)
 ASFLAGS = --cpu 65816 -g -t none
 LDFLAGS = -C $(LDS)
 

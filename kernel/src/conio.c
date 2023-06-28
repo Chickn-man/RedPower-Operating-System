@@ -98,6 +98,30 @@ void cputc(char c) {
     }
 }
 
+/* puts a character c at the cursor position | no \n or \r support */
+void cputc2(char c) {
+    setMappedRedbusDev(screenID);
+
+    screenRow = cursorY;
+
+    if (c != '\n' && c != '\r') screenBuffer[cursorX] = c;
+
+    cursorX = cursorX + 1;
+
+    if (cursorX > 79) {
+        cursorX = 0;
+
+        if (cursorY >= 49) {
+            /* scroll terminal */
+            blitShift(0, 1, 0, 0, 80, 49);
+
+            blitFill(0, 49, 80, 1, ' ');
+        } else {
+            cursorY = cursorY + 1;
+        }
+    }
+}
+
 void cputs(char *s) {
     while (*s != 0) {
         cputc(*s++);

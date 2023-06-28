@@ -13,6 +13,7 @@ unsigned char whereX(void);
 unsigned char whereY(void);
 
 void cputc(char c);
+void cputc2(char c);
 void cputs(char *s);
 char cgetc(void);
 void cbkspc(void);
