@@ -3,6 +3,7 @@
 #include <window.h>
 #include <conio.h>
 #include "string.h"
+#include "disk.h"
 
 char input[128];
 char command[64];
@@ -11,6 +12,10 @@ char buffer[64];
 int main(void) {
     unsigned char i;
     char c;
+
+    readSector('a', (unsigned short)0, (unsigned char *)0x8000);
+
+    if (*(unsigned short*)0x81fe == 0xaa55) cputs("disk read success\n");
 
     cputs("Hellorld!\n");
 
@@ -33,6 +38,8 @@ int main(void) {
 
                 } else if (strcmp(command, "version") == 0) {
 VERSION:            cputs("RedPower Operating System ");
+                    cputs(itoa(VERSION_REL, buffer, 10));
+                    cputc('.');
                     cputs(itoa(VERSION_MAJ, buffer, 10));
                     cputc('.');
                     cputs(itoa(VERSION_MIN, buffer, 10));
@@ -50,8 +57,8 @@ VERSION:            cputs("RedPower Operating System ");
 
                 } else if (strcmp(command, "poke") == 0) {
                     // grab address from input, grab hex value from input, and write value to address
+                    setMappedRedbusDev(driveA_ID);
                     *(unsigned char *)hextoi(strtok(0, " ")) = (unsigned char)hextoi(strtok(0, " "));
-                    cputc('\n');
 
                 } else if (strcmp(command, "jump") == 0) {
                     // grab address from input, jump to address (jsr)

@@ -21,7 +21,7 @@ filesystem: bootloader kernel
 	@ mcopy -i fs.img kernel/bin/kernel ::/boot/kernel
 
 .PHONY: run
-run: image
+run:
 	cd emu65el02 && wine emu65el02.exe ../floppy.img
 
 .PHONY: clean
@@ -30,5 +30,3 @@ clean:
 	-@ rm floppy.img
 	@ make -C bootloader clean
 	@ make -C kernel clean
-
-#cp floppy.img /home/hlep/.minecraft/saves/New\ World-/redpower/disk_79ef917f421be20d.img

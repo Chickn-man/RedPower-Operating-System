@@ -24,9 +24,8 @@
 #define IO_LATCH WINDOW + 0x2
 
 #define DISK_BUFFER WINDOW
-#define DISK_SECTOR WINDOW + 0x80
+#define DISK_SECTOR 0xff80 // this is supposed to defined as "WINDOW + 0x80" but that doesn't work for some reason, it compiles to 0x0000, it's prolly a bug with cc65.
 #define DISK_COMMAND WINDOW + 0x82
-
 
 /* variable macros */
 
