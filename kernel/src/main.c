@@ -4,6 +4,7 @@
 #include <conio.h>
 #include "string.h"
 #include "disk.h"
+#include "asm/asm.h"
 
 char input[128];
 char command[64];
@@ -13,14 +14,8 @@ int main(void) {
     unsigned char i;
     char c;
 
-    readSector('a', (unsigned short)0, (unsigned char *)0x8000);
+    goto VERSION;
 
-    if (*(unsigned short*)0x81fe == 0xaa55) cputs("disk read success\n");
-
-    cputs("Hellorld!\n");
-
-    cputc('>');
-    
     while (1) {
         c = cgetc();
         if (c == 0x8) strdelc(input), cbkspc(), c = 0; else cputc(c);
@@ -64,6 +59,9 @@ VERSION:            cputs("RedPower Operating System ");
                     // grab address from input, jump to address (jsr)
                     void (*jump)(void) = (void (*)(void))(hextoi(strtok(0, " ")));
                     (*jump)();
+
+                } else if (strcmp(command, "reboot") == 0) {
+                    ((void (*)(void))0x500)();
 
                 } else {
                     cputs("command not found\n");

@@ -13,6 +13,8 @@ void strcpy(char *dst, char *src) {
 
     for (i = 0; src[i] != 0; i++) dst[i] = src[i];
 
+    dst[i] = 0;
+
 }
 
 void strcat(char *dst, char *src) {
