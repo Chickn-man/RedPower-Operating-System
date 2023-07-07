@@ -28,10 +28,6 @@
 ; housekeeping
 
 _init:   
-    pha ; work around for the 65EL02 stack pointer bug 
-    ldx #$FF ; Initialize stack pointer to $01FF
-    txs
-    cld ; Clear decimal mode
 
 ; ---------------------------------------------------------------------------
 ; Set cc65 argument stack pointer
@@ -58,6 +54,4 @@ _init:
 
 _exit:    
     jsr donelib ; Run destructors
-    exitloop:
-        wai
-        jmp exitloop
+    rts

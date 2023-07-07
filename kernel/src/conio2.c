@@ -1,7 +1,7 @@
-#include <conio.h>
-#include <globals.h>
-#include <window.h>
-#include <asm.h>
+#include "conio2.h"
+#include "globals.h"
+#include "window.h"
+#include "asm/asm.h"
 #include <mmu.h>
 
 void blitShift(unsigned char sx, unsigned char sy, unsigned char dx, unsigned char dy, unsigned char w, unsigned char h) {
@@ -41,34 +41,34 @@ void blitFill(unsigned char x, unsigned char y, unsigned char w, unsigned char h
     }
 }
 
-void cls(void) {
+void clrscr(void) {
     blitFill(0, 0, 80, 50, ' ');
-    gotoXY(0, 0);
+    gotoxy(0, 0);
 }
 
-void gotoXY(unsigned char x, unsigned char y) {
+void gotoxy(unsigned char x, unsigned char y) {
     setMappedRedbusDev(screenID);
 
     cursorX = x;
     cursorY = y;
 }
-void gotoX(unsigned char x) {
+void gotox(unsigned char x) {
     setMappedRedbusDev(screenID);
 
     cursorX = x;
 }
-void gotoY(unsigned char y) {
+void gotoy(unsigned char y) {
     setMappedRedbusDev(screenID);
 
     cursorY = y;
 }
 
-unsigned char whereX(void) {
+unsigned char wherex(void) {
     setMappedRedbusDev(screenID);
 
     return cursorX;
 }
-unsigned char whereY(void) {
+unsigned char wherey(void) {
     setMappedRedbusDev(screenID);
 
     return cursorY;
@@ -84,7 +84,16 @@ void cputc(char c) {
 
     cursorX = cursorX + 1;
 
-    if (cursorX > 79 || c == '\n' || c == '\r') {
+    if (c == '\n') if (cursorY >= 49) {
+        /* scroll terminal */
+        blitShift(0, 1, 0, 0, 80, 49);
+
+        blitFill(0, 49, 80, 1, ' ');
+    } else cursorY = cursorY + 1;
+
+    if (c == '\r') cursorX = 0;
+
+    if (cursorX > 79) {
         cursorX = 0;
 
         if (cursorY >= 49) {
@@ -100,26 +109,10 @@ void cputc(char c) {
 
 /* puts a character c at the cursor position | no \n or \r support */
 void cputc2(char c) {
-    setMappedRedbusDev(screenID);
+    if (c == '\n' || c == '\r') return;
 
-    screenRow = cursorY;
-
-    if (c != '\n' && c != '\r') screenBuffer[cursorX] = c;
-
-    cursorX = cursorX + 1;
-
-    if (cursorX > 79) {
-        cursorX = 0;
-
-        if (cursorY >= 49) {
-            /* scroll terminal */
-            blitShift(0, 1, 0, 0, 80, 49);
-
-            blitFill(0, 49, 80, 1, ' ');
-        } else {
-            cursorY = cursorY + 1;
-        }
-    }
+    cputc(c);
+   
 }
 
 void cputs(char *s) {
@@ -150,20 +143,17 @@ char cgetc(void) {
 }
 
 void cbkspc(void) {
-    setMappedRedbusDev(screenID);
+    if (wherex() == 0 && wherey() == 0) return;
 
-    if (cursorX == 0 && cursorY == 0) return;
+    gotox(wherex() - 1);
+    if (wherex() == 255) gotoxy(79, wherey() - 1);
 
-    cursorX = cursorX - 1;
-    if (cursorX == 255) gotoXY(79, cursorY - 1);
-
-    screenRow = cursorY;
-    screenBuffer[cursorX] = ' ';
+    cputc(' ');
+    gotox(wherex() - 1);
 }
 
 void cdelc(void) {
-    setMappedRedbusDev(screenID);
+    cputc(' ');
 
-    screenRow = cursorY;
-    screenBuffer[cursorX] = ' ';
+    gotox(wherex() - 1);
 }

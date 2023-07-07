@@ -1,15 +1,15 @@
 PROGNAME = kernel
 
 VERSION_REL = 0
-VERSION_MAJ = 7
-VERSION_MIN = 1
+VERSION_MAJ = 8
+VERSION_MIN = 0
 VERSION_FIX = 0
 
 CC = cl65
 AS = ca65
 LD = ld65
 
-INCS = -I ./src/ -I ./src/asm -I ./cc65/include -I /
+INCS = -I ./cc65/include -I /usr/share/cc65/include
 LIBS = 
 
 LDS = ./cc65/rpc8.cfg
